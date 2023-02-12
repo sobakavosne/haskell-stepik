@@ -11,6 +11,8 @@ common language
   build-depends:
     , base
     , time
+    , directory
+    , mtl
 
   default-language: Haskell2010
 
