@@ -19,10 +19,10 @@ common language
 library
   import:          language
   exposed-modules:
-      N1_Intro
-    , N2_Basics
-    , N3_Lists
-    , N4_DataTypes
+      Part_1.N1_Intro
+    , Part_1.N2_Basics
+    , Part_1.N3_Lists
+    , Part_1.N4_DataTypes
 
   hs-source-dirs:  src
 

@@ -1,7 +1,7 @@
 {-# LANGUAGE InstanceSigs  #-}
 {-# LANGUAGE TupleSections #-}
 
-module N5_Monads where
+module Part_1.N5_Monads where
 
 import           Control.Monad       (foldM, liftM)
 import           Control.Monad.State (replicateM_)
@@ -17,6 +17,7 @@ data Point3D a =
   deriving (Show)
 
 instance Functor Point3D where
+  fmap :: (a -> b) -> Point3D a -> Point3D b
   fmap f (Point3D x y z) = Point3D (f x) (f y) (f z)
 
 data GeomPrimitive a
@@ -24,6 +25,7 @@ data GeomPrimitive a
   | LineSegment (Point3D a) (Point3D a)
 
 instance Functor GeomPrimitive where
+  fmap :: (a -> b) -> GeomPrimitive a -> GeomPrimitive b
   fmap f (Point (Point3D x y z)) = Point $ Point3D (f x) (f y) (f z)
   fmap f (LineSegment a b)       = LineSegment (fmap f a) (fmap f b)
 
@@ -33,6 +35,7 @@ data Tree' a
   deriving (Show)
 
 instance Functor Tree' where
+  fmap :: (a -> b) -> Tree' a -> Tree' b
   fmap f (Leaf' a)      = Leaf' (fmap f a)
   fmap f (Branch a b c) = Branch (fmap f a) (fmap f b) (fmap f c)
 
@@ -50,8 +53,8 @@ instance Functor (Entry k1 k2) where
 instance Functor (Map k1 k2) where
   fmap f (Map x) = Map (map (fmap f) x)
 
---
 -- fmap (map toUpper) $ Map [Entry (0, 0) "origin", Entry (800, 0) "right corner"]
+--
 data Log a =
   Log [String] a
   deriving (Show)
@@ -88,14 +91,19 @@ bindLog (Log msg1 a) f = Log (msg1 ++ msg2) b
 -- Log ["nothing done yet"] 3 `bindLog` add1Log `bindLog` mult2Log
 --
 instance Functor Log where
+  fmap :: (a -> b) -> Log a -> Log b
   fmap = liftM
 
 instance Applicative Log where
+  pure :: a -> Log a
   pure = returnLog
+  (<*>) :: Log (a -> b) -> Log a -> Log b
   (<*>) = undefined
 
 instance Monad Log where
+  return :: a -> Log a
   return = pure
+  (>>=) :: Log a -> (a -> Log b) -> Log b
   (>>=) = bindLog
 
 execLoggersList :: a -> [a -> Log a] -> Log a
@@ -113,14 +121,19 @@ newtype SomeType a =
   SomeType a
 
 instance Monad SomeType where
+  return :: a -> SomeType a
   return = pure
+  (>>=) :: SomeType a -> (a -> SomeType b) -> SomeType b
   (>>=) (SomeType a) f = f a
 
 instance Applicative SomeType where
+  pure :: a -> SomeType a
   pure = SomeType
+  (<*>) :: SomeType (a -> b) -> SomeType a -> SomeType b
   (<*>) = undefined
 
 instance Functor SomeType where
+  fmap :: (a -> b) -> SomeType a -> SomeType b
   fmap f x = x <&> f
 
 {-
@@ -182,13 +195,13 @@ main' = do
     "" -> main'
     _  -> putStrLn ("Hi, " ++ name ++ "!")
 
---
 -- nextPositionsN :: Board -> Int -> (Board -> Bool) -> [Board]
 -- nextPositionsN b n pred
 --   | n == 0 = [b | pred b]
 --   | n < 0 = []
 --   | otherwise =
 --     concat [nextPositionsN b' (n - 1) pred | b' <- nextPositions b, pred b']
+--
 main'' :: IO ()
 main'' = do
   putStr "Substring: "
@@ -222,14 +235,19 @@ local :: (r -> b) -> Reader b a -> Reader r a
 local f m = Reader (runReader m . f)
 
 instance Functor (Reader r) where
+  fmap :: (a -> b) -> Reader r a -> Reader r b
   fmap f x = x <&> f
 
 instance Applicative (Reader r) where
+  pure :: a -> Reader r a
   pure = Reader . const
+  (<*>) :: Reader r (a -> b) -> Reader r a -> Reader r b
   (<*>) = undefined
 
 instance Monad (Reader r) where
+  return :: a -> Reader r a
   return = pure
+  (>>=) :: Reader r a -> (a -> Reader r b) -> Reader r b
   m >>= k = Reader $ \r -> runReader (k (runReader m r)) r
 
 local' :: (r -> r') -> Reader r' a -> Reader r a
@@ -260,21 +278,29 @@ writer :: (a, w) -> Writer w a
 writer = Writer
 
 instance Functor (Writer w) where
+  fmap :: (a -> b) -> Writer w a -> Writer w b
   fmap f x = x <&> f
 
 instance Semigroup (Writer w a) where
+  (<>) :: Writer w a -> Writer w a -> Writer w a
   (<>) = undefined
 
 instance Monoid w => Applicative (Writer w) where
+  pure :: Monoid w => a -> Writer w a
   pure x = Writer (x, mempty)
+  (<*>) :: Monoid w => Writer w (a -> b) -> Writer w a -> Writer w b
   (<*>) = undefined
 
 instance (Monoid a, Monoid w) => Monoid (Writer w a) where
+  mempty :: (Monoid a, Monoid w) => Writer w a
   mempty = pure mempty
+  mappend :: (Monoid a, Monoid w) => Writer w a -> Writer w a -> Writer w a
   mappend = (<>)
 
 instance Monoid w => Monad (Writer w) where
+  return :: Monoid w => a -> Writer w a
   return = pure
+  (>>=) :: Monoid w => Writer w a -> (a -> Writer w b) -> Writer w b
   m >>= k = Writer (y, u <> v)
     where
       (x, u) = runWriter m
@@ -293,6 +319,7 @@ evalWriter m = fst (runWriter m)
 --
 -- newtype Sum a =
 --   Sum a
+--
 type Shopping = Writer (Sum (Integer, [String])) ()
 
 -- instance Show a => Show (Sum a) where
@@ -346,15 +373,19 @@ execState :: State s a -> s -> (a, s)
 execState = runState
 
 instance Functor (State s) where
+  fmap :: (a -> b) -> State s a -> State s b
   fmap f x = x <&> f
 
 instance Applicative (State s) where
   pure :: a -> State s a
   pure s = State (s, )
+  (<*>) :: State s (a -> b) -> State s a -> State s b
   (<*>) = undefined
 
 instance Monad (State s) where
+  return :: a -> State s a
   return = pure
+  (>>=) :: State s a -> (a -> State s b) -> State s b
   m >>= k =
     State $ \s ->
       let (a, s) = runState m s

@@ -3,7 +3,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Use foldr" #-}
-module N4_DataTypes where
+module Part_1.N4_DataTypes where
 
 import           Data.Char        (isDigit)
 import           Data.Semigroup   as Semigroup (Semigroup ((<>)))
@@ -51,6 +51,7 @@ data Coord a =
 
 -- distance :: Coord Double -> Coord Double -> Double
 -- distance (Coord x1 y1) (Coord x2 y2) = sqrt $ (x2 - x1) ^ 2 + (y2 - y1) ^ 2
+--
 manhDistance :: Coord Int -> Coord Int -> Int
 manhDistance (Coord x1 y1) (Coord x2 y2) = abs (x2 - x1) + abs (y2 - y1)
 
@@ -87,6 +88,7 @@ data Person =
 --     correspondence (label, value) = (init label, (tail . tail) value)-- personFromStr (label, value)
 --
 -- parsePerson "firstName = John\nlastName = Connor\nage = 30"
+--
 data List a
   = Nil
   | Cons a (List a)
@@ -169,8 +171,8 @@ avg t =
     go :: Tree Int -> (Int, Int)
     go x = (sizeT x, sumT x)
 
---
 -- sizeT (Node (Node (Node (Node (Leaf 1) (Leaf 1)) (Leaf 1)) (Node (Leaf 1) (Leaf 1))) (Node (Node (Leaf 1) (Leaf 1)) (Node (Leaf 1) (Leaf 1))))
+--
 infixl 6 :+:
 
 infixl 7 :*:
@@ -190,6 +192,7 @@ expand e                   = e
 
 -- expand $ (Val 1 :+: Val 2 :+: Val 3) :*: (Val 4 :+: Val 5)
 -- Val 1 :*: Val 4 :+: (Val 1 :*: Val 5 :+: (Val 2 :*: Val 4 :+: (Val 2 :*: Val 5 :+: (Val 3 :*: Val 4 :+: Val 3 :*: Val 5))))
+--
 newtype Xor =
   Xor
     { getXor :: Bool
@@ -219,7 +222,6 @@ newtype Maybe' a =
 
 -- instance Semigroup a => Semigroup (Maybe' a)
 --   -- (<>) :: Semigroup a => Maybe' a -> Maybe' a -> Maybe' a
-
 -- instance Monoid a => Monoid (Maybe' a) where
 --   mempty :: Monoid a => Maybe' a
 --   mempty = Maybe' mempty
@@ -227,7 +229,6 @@ newtype Maybe' a =
 --   Maybe' a `mappend` Maybe' Nothing = Maybe' a
 --   Maybe' Nothing `mappend` Maybe' b = Maybe' b
 --   Maybe' a `mappend` Maybe' b       = Maybe' (a `mappend` b)
-
 -- class MapLike m where
 --   infixr 5 #
 --   (#) :: Ord k => m k v -> m k v -> m k v
@@ -259,6 +260,7 @@ newtype Maybe' a =
 -- --
 -- list :: ListMap String Integer
 -- delete "f" list
+--
 class MapLike m where
   empty :: m k v
   lookup :: Ord k => k -> m k v -> Maybe v
@@ -292,4 +294,3 @@ newtype ArrowMap k v =
   ArrowMap
     { getArrowMap :: k -> Maybe v
     }
---

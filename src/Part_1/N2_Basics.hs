@@ -1,40 +1,52 @@
-module Basics where
+{-# LANGUAGE InstanceSigs #-}
+
+module Part_1.N2_Basics where
 
 -- import Data.Function
 -- left section
 -- (1+)
 -- right section
 -- (+1)
+--
 on :: (b -> b -> c) -> (a -> b) -> a -> a -> c
 on op f x y = f x `op` f y
 
-multSecond a b = on g h a b
+multSecond :: (a, Integer) -> (a, Integer) -> Integer
+multSecond = on g h
 
+g :: Integer -> Integer -> Integer
 g = (*)
 
+h :: (a, b) -> b
 h (_, y) = y
 
 -- multSecond ('A',2) ('E',7)
+--
 on3 :: (b -> b -> b -> c) -> (a -> b) -> a -> a -> a -> c
 on3 op f x y z = op (f x) (f y) (f z)
 
+sum3squares :: Integer -> Integer -> Integer -> Integer
 sum3squares = (\x y z -> x + y + z) `on3` (^ 2)
 
 -- sum3squares 1 2 3
+--
 class Printable a where
   toString :: a -> String
   toString _ = "unit type"
 
 instance Printable Bool where
+  toString :: Bool -> String
   toString True  = "true"
   toString False = "false"
 
 instance Printable ()
 
 instance (Printable a, Printable b) => Printable (a, b) where
+  toString :: (Printable a, Printable b) => (a, b) -> String
   toString (a, b) = "(" ++ toString a ++ "," ++ toString b ++ ")"
 
 -- toString (True,())
+--
 class KnownToGork a where
   stomp :: a -> a
   doesEnrageGork :: a -> Bool
@@ -53,14 +65,19 @@ class (KnownToGork a, KnownToMork a) =>
     | doesEnrageGork a = stab a
     | otherwise = a
 
+ip :: [Char]
 ip = show a ++ show b ++ show c ++ show d
 
+a :: Double
 a = 127.22
 
+b :: Double
 b = 4.1
 
+c :: Double
 c = 20.1
 
+d :: Integer
 d = 2
 
 -- ip
@@ -81,12 +98,15 @@ instance SafeEnum Bool
 instance SafeEnum Int
 
 -- spred (-9223372036854775808) :: Int
+--
 avg :: Int -> Int -> Int -> Double
-avg a b c = (sum $ map fromIntegral [a, b, c]) / 3
+avg a b c = sum (map fromIntegral [a, b, c]) / 3
 
 -- avg 3 4 8
+--
 sumIt :: Int -> Int -> Int
 sumIt x y = x + y
+--
 -- Reduction
 {-
   Lazy strategy
@@ -122,4 +142,3 @@ sumIt x y = x + y
   value = (30) + (30)
   value = 60
 -}
-
