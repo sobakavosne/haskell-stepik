@@ -137,14 +137,17 @@ instance Functor SomeType where
   fmap f x = x <&> f
 
 {-
-  Monad laws:
-    1. return x >>= f ≡ f x
-    where f is Kleisli arrow
 
-    2. m >>= return is equal to m
+Monad laws:
 
-    3. (m >>= f) >>= g is equal to m >>= (\x -> f x >>= g)
-                     ~ is equal to m >>= \x -> f x >>= g
+1. return x >>= f ≡ f x
+   where f is Kleisli arrow
+
+2. m >>= return ≡ m
+
+3. (m >>= f) >>= g ≡ m >>= (\x -> f x >>= g)
+                 ~ ≡ m >>= \x -> f x >>= g
+
 -}
 data Token
   = Number Int
