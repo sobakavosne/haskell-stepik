@@ -23,6 +23,7 @@ library
     , Part_1.N2_Basics
     , Part_1.N3_Lists
     , Part_1.N4_DataTypes
+    , Part_2.N1_Applicative
 
   hs-source-dirs:  src
 
