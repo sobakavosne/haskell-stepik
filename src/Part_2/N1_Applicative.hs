@@ -71,7 +71,7 @@ fmap f (fmap g (x:xs))                      -- def map
 -}
 {-
 
-Functor 🠒 Applicative Low
+Functor 🠒 Applicative Law
 
 fmap g container ≡ pure g <*> container
 

@@ -2,6 +2,7 @@ module Part_1.N1_Intro where
 
 import           Data.Char (isDigit)
 
+sign :: (Num a1, Num a2, Ord a1) => a1 -> a2
 sign 0 = 0
 sign x
   | x > 0 = 1
